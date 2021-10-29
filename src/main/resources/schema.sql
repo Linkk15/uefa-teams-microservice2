@@ -19,6 +19,7 @@ CREATE TABLE team
     id         INT AUTO_INCREMENT PRIMARY KEY,
     name       VARCHAR(250) NOT NULL,
     photo      int,
+    date_uefa  date,
     country_id INT          not null,
     rival_id   int,
     foreign key (country_id) references country (id),

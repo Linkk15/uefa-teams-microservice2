@@ -6,6 +6,8 @@ import lombok.Setter;
 import uefa.teams.microservice.models.Country;
 import uefa.teams.microservice.models.Rival;
 
+import java.util.Date;
+
 @Getter
 @Setter
 public class TeamResponse {
@@ -24,4 +26,7 @@ public class TeamResponse {
 
     @JsonProperty("country")
     private Country countryTeam;
+
+    @JsonProperty("uefaChampion")
+    private Date dateWonUefa;
 }

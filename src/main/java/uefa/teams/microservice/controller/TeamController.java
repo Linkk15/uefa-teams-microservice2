@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import uefa.teams.microservice.models.Team;
 import uefa.teams.microservice.service.TeamService;
 
+import java.text.ParseException;
 import java.util.NoSuchElementException;
 
 @RestController
@@ -48,6 +49,20 @@ public class TeamController {
                     .contentType(MediaType.parseMediaType("application/json"))
                     .body(teamService.createOrUpdateTeam(team));
         } catch (IllegalArgumentException ex) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+        }
+    }
+
+    @PutMapping("/champion/{id}")
+    public ResponseEntity makeTeamChampion(@PathVariable Integer id,
+                                           @RequestParam(value = "date", required = true) String date) {
+        try {
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType("application/json"))
+                    .body(teamService.teamUefaChampion(id, date));
+        } catch (NoSuchElementException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        } catch (ParseException ex) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
         }
     }

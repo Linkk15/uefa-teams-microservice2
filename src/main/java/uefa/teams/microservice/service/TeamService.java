@@ -5,10 +5,9 @@ import uefa.teams.microservice.dao.TeamDAO;
 import uefa.teams.microservice.models.Team;
 import uefa.teams.microservice.response.TeamResponse;
 
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.Optional;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Service
 public class TeamService {
@@ -73,6 +72,39 @@ public class TeamService {
         }
     }
 
+    public void deleteTeam(Integer id) {
+        teamDAO.deleteById(getTeamById(id).getId());
+    }
+
+    public TeamResponse teamUefaChampion(Integer id, String date) throws NoSuchElementException, ParseException {
+        Optional<Team> teamExists = teamDAO.findById(id);
+
+        if (teamExists.isPresent()) {
+            teamExists.get().setDateUefa(formatDate(date));
+            return convertTeamIntoTeamResponse(teamDAO.save(teamExists.get()));
+        } else {
+            throw new NoSuchElementException("No team record exists for that id");
+        }
+    }
+
+    private Date formatDate(final String date) throws ParseException {
+        try {
+            return new SimpleDateFormat("yyyyMMdd").parse(date);
+        } catch (ParseException e) {
+            throw new ParseException(String.format("The selected date %s cannot be parsed", date), 0);
+        }
+    }
+
+    private Team getTeamById(Integer id) throws NoSuchElementException {
+        Optional<Team> team = teamDAO.findById(id);
+
+        if (team.isPresent()) {
+            return team.get();
+        } else {
+            throw new NoSuchElementException("No team record exists for that id");
+        }
+    }
+
     private boolean sameTeamName(List<Team> teamList, String newName) {
         boolean sameName = false;
         if (teamList != null && newName != null) {
@@ -84,20 +116,6 @@ public class TeamService {
         }
 
         return sameName;
-    }
-
-    public void deleteTeam(Integer id) {
-        teamDAO.deleteById(getTeamById(id).getId());
-    }
-
-    private Team getTeamById(Integer id) throws NoSuchElementException {
-        Optional<Team> team = teamDAO.findById(id);
-
-        if (team.isPresent()) {
-            return team.get();
-        } else {
-            throw new NoSuchElementException("No team record exists for that id");
-        }
     }
 
     private boolean nameTeamFiltering(final Team team) {
@@ -114,6 +132,7 @@ public class TeamService {
             teamResponse.setCountryTeam(team.getCountry());
             teamResponse.setRivalTeam(team.getRival());
             teamResponse.setPhotoTeam(team.getPhoto());
+            teamResponse.setDateWonUefa(team.getDateUefa());
         }
 
         return teamResponse;

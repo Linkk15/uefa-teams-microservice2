@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Table(name = "team")
@@ -22,6 +23,9 @@ public class Team {
     //, columnDefinition = "BLOB")
     //@Lob
     private Integer photo;
+
+    @Column(name = "date_uefa")
+    private Date dateUefa;
 
     //Relations
     @OneToOne
