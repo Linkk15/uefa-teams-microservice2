@@ -1,6 +1,5 @@
 package uefa.teams.microservice.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -13,8 +12,11 @@ import java.util.NoSuchElementException;
 @RestController
 @RequestMapping("teams")
 public class TeamController {
-    @Autowired
-    private TeamService teamService;
+    private final TeamService teamService;
+
+    public TeamController(TeamService teamService) {
+        this.teamService = teamService;
+    }
 
     @GetMapping("/list")
     public ResponseEntity listAllTeams() {

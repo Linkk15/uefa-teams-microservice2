@@ -1,7 +1,14 @@
 DROP TABLE IF EXISTS team;
 DROP TABLE IF EXISTS country;
+DROP TABLE IF EXISTS rival;
 
 CREATE TABLE country
+(
+    id   int AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(250) NOT NULL
+);
+
+CREATE TABLE rival
 (
     id   int AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(250) NOT NULL
@@ -11,8 +18,9 @@ CREATE TABLE team
 (
     id         INT AUTO_INCREMENT PRIMARY KEY,
     name       VARCHAR(250) NOT NULL,
-    rival      varchar(255),
     photo      int,
-    country_id INT,
-    foreign key (country_id) references country (id)
+    country_id INT          not null,
+    rival_id   int,
+    foreign key (country_id) references country (id),
+    foreign key (rival_id) references rival (id)
 );

@@ -5,11 +5,11 @@ import lombok.Setter;
 
 import javax.persistence.*;
 
+@Entity
 @Getter
 @Setter
-@Entity
-@Table(name = "country")
-public class Country {
+@Table(name = "rival")
+public class Rival {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)

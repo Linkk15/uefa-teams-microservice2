@@ -3,6 +3,8 @@ package uefa.teams.microservice.response;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
+import uefa.teams.microservice.models.Country;
+import uefa.teams.microservice.models.Rival;
 
 @Getter
 @Setter
@@ -15,11 +17,11 @@ public class TeamResponse {
     private String nameTeam;
 
     @JsonProperty("rival")
-    private String rivalTeam;
+    private Rival rivalTeam;
 
     @JsonProperty("photo")
     private Integer photoTeam;
 
     @JsonProperty("country")
-    private String countryTeam;
+    private Country countryTeam;
 }

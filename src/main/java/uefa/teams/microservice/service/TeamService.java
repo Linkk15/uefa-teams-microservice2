@@ -111,7 +111,7 @@ public class TeamService {
         if (team != null) {
             teamResponse.setIdTeam(team.getId());
             teamResponse.setNameTeam(team.getName());
-            teamResponse.setCountryTeam(team.getCountry().getName());
+            teamResponse.setCountryTeam(team.getCountry());
             teamResponse.setRivalTeam(team.getRival());
             teamResponse.setPhotoTeam(team.getPhoto());
         }

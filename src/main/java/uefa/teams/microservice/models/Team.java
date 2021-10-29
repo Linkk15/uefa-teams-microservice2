@@ -18,16 +18,19 @@ public class Team {
     @Column(name = "name", length = 255, nullable = false)
     private String name;
 
-    @OneToOne
-    private Country country;
-
-    @Column(name = "rival", length = 255)
-    private String rival;
-
     @Column(name = "photo")
     //, columnDefinition = "BLOB")
     //@Lob
     private Integer photo;
+
+    //Relations
+    @OneToOne
+    private Country country;
+    /* Todo el tema del país también se puede hacer con un ENUM pero serían meter muchas constantes */
+
+    @OneToOne
+    private Rival rival;
+    /* Esto no podría hacerse con un atributo de Team ya que el rival también es un equipo ?? */
 
     public Integer getId() {
         return id;
