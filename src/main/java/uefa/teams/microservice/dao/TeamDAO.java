@@ -5,6 +5,6 @@ import org.springframework.stereotype.Repository;
 import uefa.teams.microservice.models.Team;
 
 @Repository
-public interface TeamDAO extends JpaRepository<Team, Long> {
+public interface TeamDAO extends JpaRepository<Team, Integer> {
 
 }

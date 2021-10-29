@@ -12,26 +12,28 @@ import javax.persistence.*;
 public class Team {
     @Id
     @Column(name = "id", nullable = false)
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Integer id;
 
     @Column(name = "name", length = 255, nullable = false)
     private String name;
 
-    @Column(name = "country", length = 255, nullable = false)
-    private String country;
+    @OneToOne
+    private Country country;
 
     @Column(name = "rival", length = 255)
     private String rival;
 
     @Column(name = "photo")
+    //, columnDefinition = "BLOB")
+    //@Lob
     private Integer photo;
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 }

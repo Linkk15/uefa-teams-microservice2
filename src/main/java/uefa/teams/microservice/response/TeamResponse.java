@@ -9,7 +9,7 @@ import lombok.Setter;
 public class TeamResponse {
 
     @JsonProperty("team")
-    private Long idTeam;
+    private Integer idTeam;
 
     @JsonProperty("name")
     private String nameTeam;

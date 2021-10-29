@@ -29,7 +29,7 @@ public class TeamController {
     }
 
     @GetMapping("/team/{id}")
-    public ResponseEntity getTeam(@PathVariable Long id) {
+    public ResponseEntity getTeam(@PathVariable Integer id) {
         try {
             return ResponseEntity.ok()
                     .contentType(MediaType.parseMediaType("application/json"))
@@ -51,7 +51,7 @@ public class TeamController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteTeam(@PathVariable Long id) {
+    public ResponseEntity deleteTeam(@PathVariable Integer id) {
         try {
             teamService.deleteTeam(id);
             return ResponseEntity.ok()

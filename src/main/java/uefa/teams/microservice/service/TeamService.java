@@ -31,7 +31,7 @@ public class TeamService {
         }
     }
 
-    public TeamResponse getTeamResponseById(Long id) throws NoSuchElementException {
+    public TeamResponse getTeamResponseById(Integer id) throws NoSuchElementException {
         Optional<Team> team = teamDAO.findById(id);
 
         if (team.isPresent()) {
@@ -49,6 +49,7 @@ public class TeamService {
             if (teamExists.isPresent()) {
                 //update
                 Team teamUpdate = new Team();
+                teamUpdate.setId(newTeam.getId());
                 teamUpdate.setName(newTeam.getName());
                 teamUpdate.setCountry(newTeam.getCountry());
                 teamUpdate.setRival(newTeam.getRival());
@@ -85,11 +86,11 @@ public class TeamService {
         return sameName;
     }
 
-    public void deleteTeam(Long id) {
+    public void deleteTeam(Integer id) {
         teamDAO.deleteById(getTeamById(id).getId());
     }
 
-    private Team getTeamById(Long id) throws NoSuchElementException {
+    private Team getTeamById(Integer id) throws NoSuchElementException {
         Optional<Team> team = teamDAO.findById(id);
 
         if (team.isPresent()) {
@@ -110,7 +111,7 @@ public class TeamService {
         if (team != null) {
             teamResponse.setIdTeam(team.getId());
             teamResponse.setNameTeam(team.getName());
-            teamResponse.setCountryTeam(team.getCountry());
+            teamResponse.setCountryTeam(team.getCountry().getName());
             teamResponse.setRivalTeam(team.getRival());
             teamResponse.setPhotoTeam(team.getPhoto());
         }
