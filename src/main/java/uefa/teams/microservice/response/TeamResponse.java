@@ -5,8 +5,9 @@ import lombok.Getter;
 import lombok.Setter;
 import uefa.teams.microservice.models.Country;
 import uefa.teams.microservice.models.Rival;
+import uefa.teams.microservice.models.Uefa;
 
-import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -27,6 +28,6 @@ public class TeamResponse {
     @JsonProperty("country")
     private Country countryTeam;
 
-    @JsonProperty("uefaChampion")
-    private Date dateWonUefa;
+    @JsonProperty("uefas")
+    private List<Uefa> uefas;
 }

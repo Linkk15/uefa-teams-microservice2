@@ -32,7 +32,7 @@ public class TeamController {
     }
 
     @GetMapping("/team/{id}")
-    public ResponseEntity getTeam(@PathVariable Integer id) {
+    public ResponseEntity getTeam(@PathVariable final Integer id) {
         try {
             return ResponseEntity.ok()
                     .contentType(MediaType.parseMediaType("application/json"))
@@ -54,16 +54,13 @@ public class TeamController {
     }
 
     @PutMapping("/champion/{id}")
-    public ResponseEntity makeTeamChampion(@PathVariable Integer id,
-                                           @RequestParam(value = "date", required = true) String date) {
+    public String makeTeamChampion(@PathVariable final Integer id,
+                                   @RequestParam(value = "date", required = true) String date) {
         try {
-            return ResponseEntity.ok()
-                    .contentType(MediaType.parseMediaType("application/json"))
-                    .body(teamService.teamUefaChampion(id, date));
-        } catch (NoSuchElementException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-        } catch (ParseException ex) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+            teamService.teamUefaChampion(id, date);
+            return "OK";
+        } catch (NoSuchElementException | ParseException ex) {
+            return ex.getMessage();
         }
     }
 

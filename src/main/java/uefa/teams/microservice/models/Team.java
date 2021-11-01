@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "team")
@@ -24,9 +24,6 @@ public class Team {
     //@Lob
     private Integer photo;
 
-    @Column(name = "date_uefa")
-    private Date dateUefa;
-
     //Relations
     @OneToOne
     private Country country;
@@ -35,6 +32,9 @@ public class Team {
     @OneToOne
     private Rival rival;
     /* Esto no podría hacerse con un atributo de Team ya que el rival también es un equipo ?? */
+
+    @OneToMany(mappedBy = "teamChampion")
+    private List<Uefa> uefas;
 
     public Integer getId() {
         return id;

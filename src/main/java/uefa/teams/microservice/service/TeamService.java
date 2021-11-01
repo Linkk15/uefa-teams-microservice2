@@ -2,7 +2,9 @@ package uefa.teams.microservice.service;
 
 import org.springframework.stereotype.Service;
 import uefa.teams.microservice.dao.TeamDAO;
+import uefa.teams.microservice.dao.UefaDAO;
 import uefa.teams.microservice.models.Team;
+import uefa.teams.microservice.models.Uefa;
 import uefa.teams.microservice.response.TeamResponse;
 
 import java.text.ParseException;
@@ -15,9 +17,11 @@ public class TeamService {
     //Intelli me recomienda instanciar el dao en vez de hacer una inyección de dependia con @Autowired
     //esto me lo comento Jose..
     private final TeamDAO teamDAO;
+    private final UefaDAO uefaDAO;
 
-    public TeamService(TeamDAO teamDAO) {
+    public TeamService(TeamDAO teamDAO, UefaDAO uefaDAO) {
         this.teamDAO = teamDAO;
+        this.uefaDAO = uefaDAO;
     }
 
     public List<Team> listTeams() throws NoSuchElementException {
@@ -76,12 +80,25 @@ public class TeamService {
         teamDAO.deleteById(getTeamById(id).getId());
     }
 
-    public TeamResponse teamUefaChampion(Integer id, String date) throws NoSuchElementException, ParseException {
+    public void teamUefaChampion(final Integer id, String date) throws NoSuchElementException, ParseException, IllegalArgumentException {
         Optional<Team> teamExists = teamDAO.findById(id);
 
-        if (teamExists.isPresent()) {
-            teamExists.get().setDateUefa(formatDate(date));
-            return convertTeamIntoTeamResponse(teamDAO.save(teamExists.get()));
+        if (teamExists.isPresent() && date != null) {
+            Uefa uefa = new Uefa();
+            uefa.setId(uefa.getId() == null ? 1 : uefa.getId() + 1); //pff :/
+            uefa.setDate(formatDate(date));
+            uefa.setTeamChampion(teamExists.get());
+
+            uefaDAO.save(uefa);
+
+            //Increment list of uefas
+            List<Uefa> uefaList = teamExists.get().getUefas();
+            uefaList.add(uefa);
+            teamExists.get().setUefas(uefaList);
+
+            teamDAO.save(teamExists.get());
+        } else if (date == null) {
+            throw new IllegalArgumentException("The date can not be null");
         } else {
             throw new NoSuchElementException("No team record exists for that id");
         }
@@ -95,7 +112,7 @@ public class TeamService {
         }
     }
 
-    private Team getTeamById(Integer id) throws NoSuchElementException {
+    private Team getTeamById(final Integer id) throws NoSuchElementException {
         Optional<Team> team = teamDAO.findById(id);
 
         if (team.isPresent()) {
@@ -132,7 +149,10 @@ public class TeamService {
             teamResponse.setCountryTeam(team.getCountry());
             teamResponse.setRivalTeam(team.getRival());
             teamResponse.setPhotoTeam(team.getPhoto());
-            teamResponse.setDateWonUefa(team.getDateUefa());
+
+            if (!team.getUefas().isEmpty()) {
+                teamResponse.setUefas(team.getUefas().get(0).getTeamChampion().getUefas());
+            }
         }
 
         return teamResponse;

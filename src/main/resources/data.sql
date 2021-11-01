@@ -54,3 +54,13 @@ insert into team (name, country_id, rival_id, photo)
 values ('Atletico Madrid', 1, 6, null);
 insert into team (name, country_id, rival_id, photo)
 values ('Manchester City', 5, 5, null);
+
+---------------------------------------------------------
+
+/*
+insert into uefa (date, team_id)
+values ('20210225', 2);
+insert into uefa (date, team_id)
+values ('20090312', 6);
+
+ */
