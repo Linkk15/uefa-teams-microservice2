@@ -45,6 +45,22 @@ public class TeamService {
 
     }
 
+    public List<Uefa> listUefasWonByTeam(final Integer id) throws NoSuchElementException {
+        Optional<Team> team = teamDAO.findById(id);
+
+        if (team.isPresent()) {
+            List<Uefa> uefaList = uefaDAO.listTeamsWonUefas(id);
+
+            if (uefaList.isEmpty()) {
+                throw new NoSuchElementException("This team has not won a Uefa Champions league yet.");
+            } else {
+                return uefaList;
+            }
+        } else {
+            throw new NoSuchElementException("No team record exists for that id");
+        }
+    }
+
     public TeamResponse createOrUpdateTeam(final Team newTeam) throws IllegalArgumentException {
         if (nameTeamFiltering(newTeam) && newTeam.getCountry() != null) {
             Optional<Team> teamExists = teamDAO.findById(newTeam.getId());
@@ -85,7 +101,14 @@ public class TeamService {
 
         if (teamExists.isPresent() && date != null) {
             Uefa uefa = new Uefa();
-            uefa.setId(uefa.getId() == null ? 1 : uefa.getId() + 1); //pff :/
+
+            if (teamExists.get().getUefas().isEmpty()) {
+                uefa.setId(1);
+            } else {
+                //esto da vergüenza...
+                uefa.setId(teamExists.get().getUefas().get(teamExists.get().getUefas().size() - 1).getId() + 1);
+            }
+
             uefa.setDate(formatDate(date));
             uefa.setTeamChampion(teamExists.get());
 

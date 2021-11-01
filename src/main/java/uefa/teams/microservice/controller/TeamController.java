@@ -31,6 +31,17 @@ public class TeamController {
         }
     }
 
+    @GetMapping("/uefalist/{id}")
+    public ResponseEntity listUefaWonByTeam(@PathVariable final Integer id) {
+        try {
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType("application/json"))
+                    .body(teamService.listUefasWonByTeam(id));
+        } catch (NoSuchElementException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }
+    }
+
     @GetMapping("/team/{id}")
     public ResponseEntity getTeam(@PathVariable final Integer id) {
         try {
