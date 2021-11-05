@@ -22,13 +22,18 @@ public class TeamService {
         this.teamDAO = teamDAO;
     }
 
-    public List<Team> listTeams() throws NoSuchElementException {
+    public List<TeamResponse> listTeams() throws NoSuchElementException {
         List<Team> teamList = teamDAO.findAll();
 
         if (teamList.isEmpty()) {
             throw new NoSuchElementException("No teams created. Create ones.");
         } else {
-            return teamList;
+            List<TeamResponse> teamResponseList = new ArrayList<>();
+            for (Team team : teamList) {
+                teamResponseList.add(convertTeamIntoTeamResponse(team));
+            }
+
+            return teamResponseList;
         }
     }
 
@@ -60,7 +65,7 @@ public class TeamService {
                 return convertTeamIntoTeamResponse(teamDAO.save(teamUpdate));
             } else {
 
-                if (sameTeamName(listTeams(), newTeam.getName())) {
+                if (sameTeamName(teamDAO.findAll(), newTeam.getName())) {
                     throw new IllegalArgumentException("There is already team with that name.");
                 } else {
                     //new team
@@ -104,12 +109,18 @@ public class TeamService {
         }
     }
 
-    public UefaResponse listUefas(final Integer id) {
+    public List<UefaResponse> listUefas(final Integer id) {
         List<Uefa> uefaList = teamDAO.listUefasWonByTeam(id);
         if (uefaList.isEmpty()) {
-            throw new NoSuchElementException("No team record exists for that id");
+            throw new NoSuchElementException("This team has not won a UEFA yet.");
+        } else {
+            List<UefaResponse> uefaResponseList = new ArrayList<>();
+            for (Uefa uefa : uefaList) {
+                uefaResponseList.add(convertUefaIntoUefaResponse(uefa));
+            }
+
+            return uefaResponseList;
         }
-        return convertUefaIntoUefaResponse(uefaList.get(0));
     }
 
     private Date formatDate(final String date, final String date2) throws ParseException {
@@ -161,7 +172,7 @@ public class TeamService {
         if (uefa != null) {
             uefaResponse.setIdUefa(uefa.getId());
             uefaResponse.setDateWin(uefa.getDate());
-            uefaResponse.setTeamWin(uefa.getTeamChampion());
+            uefaResponse.setIdTeamWin(uefa.getTeamChampion().getId());
         }
 
         return uefaResponse;
