@@ -2,10 +2,10 @@ package uefa.teams.microservice.service;
 
 import org.springframework.stereotype.Service;
 import uefa.teams.microservice.dao.TeamDAO;
-import uefa.teams.microservice.dao.UefaDAO;
 import uefa.teams.microservice.models.Team;
 import uefa.teams.microservice.models.Uefa;
 import uefa.teams.microservice.response.TeamResponse;
+import uefa.teams.microservice.response.UefaResponse;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -17,11 +17,9 @@ public class TeamService {
     //Intelli me recomienda instanciar el dao en vez de hacer una inyección de dependia con @Autowired
     //esto me lo comento Jose..
     private final TeamDAO teamDAO;
-    private final UefaDAO uefaDAO;
 
-    public TeamService(TeamDAO teamDAO, UefaDAO uefaDAO) {
+    public TeamService(TeamDAO teamDAO) {
         this.teamDAO = teamDAO;
-        this.uefaDAO = uefaDAO;
     }
 
     public List<Team> listTeams() throws NoSuchElementException {
@@ -43,22 +41,6 @@ public class TeamService {
             throw new NoSuchElementException("No team record exists for that id");
         }
 
-    }
-
-    public List<Uefa> listUefasWonByTeam(final Integer id) throws NoSuchElementException {
-        Optional<Team> team = teamDAO.findById(id);
-
-        if (team.isPresent()) {
-            List<Uefa> uefaList = uefaDAO.listTeamsWonUefas(id);
-
-            if (uefaList.isEmpty()) {
-                throw new NoSuchElementException("This team has not won a Uefa Champions league yet.");
-            } else {
-                return uefaList;
-            }
-        } else {
-            throw new NoSuchElementException("No team record exists for that id");
-        }
     }
 
     public TeamResponse createOrUpdateTeam(final Team newTeam) throws IllegalArgumentException {
@@ -96,30 +78,25 @@ public class TeamService {
         teamDAO.deleteById(getTeamById(id).getId());
     }
 
-    public void teamUefaChampion(final Integer id, String date) throws NoSuchElementException, ParseException, IllegalArgumentException {
+    public TeamResponse teamUefaChampion(final Integer id, final String date) throws NoSuchElementException, ParseException, IllegalArgumentException, NullPointerException {
         Optional<Team> teamExists = teamDAO.findById(id);
+        Team teamWinner = new Team();
+        boolean dateFounded = false;
+        Date dateInput = formatDate(date, null);
 
         if (teamExists.isPresent() && date != null) {
-            Uefa uefa = new Uefa();
-
-            if (teamExists.get().getUefas().isEmpty()) {
-                uefa.setId(1);
-            } else {
-                //esto da vergüenza...
-                uefa.setId(teamExists.get().getUefas().get(teamExists.get().getUefas().size() - 1).getId() + 1);
+            for (int i = 0; i < teamExists.get().getUefas().size() && !dateFounded; i++) {
+                if (formatDate(null, teamExists.get().getUefas().get(i).getDate().toString()).equals(dateInput)) {
+                    teamWinner = teamExists.get().getUefas().get(i).getTeamChampion();
+                    dateFounded = true;
+                }
             }
 
-            uefa.setDate(formatDate(date));
-            uefa.setTeamChampion(teamExists.get());
-
-            uefaDAO.save(uefa);
-
-            //Increment list of uefas
-            List<Uefa> uefaList = teamExists.get().getUefas();
-            uefaList.add(uefa);
-            teamExists.get().setUefas(uefaList);
-
-            teamDAO.save(teamExists.get());
+            if (!dateFounded) {
+                throw new NullPointerException("This team has not won UEFA on this date.");
+            } else {
+                return convertTeamIntoTeamResponse(teamWinner);
+            }
         } else if (date == null) {
             throw new IllegalArgumentException("The date can not be null");
         } else {
@@ -127,9 +104,24 @@ public class TeamService {
         }
     }
 
-    private Date formatDate(final String date) throws ParseException {
+    public UefaResponse listUefas(final Integer id) {
+        List<Uefa> uefaList = teamDAO.listUefasWonByTeam(id);
+        if (uefaList.isEmpty()) {
+            throw new NoSuchElementException("No team record exists for that id");
+        }
+        return convertUefaIntoUefaResponse(uefaList.get(0));
+    }
+
+    private Date formatDate(final String date, final String date2) throws ParseException {
         try {
-            return new SimpleDateFormat("yyyyMMdd").parse(date);
+            if (date != null) {
+                return new SimpleDateFormat("yyyyMMdd").parse(date);
+            } else if (date2 != null) {
+                return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S").parse(date2);
+            } else {
+                //review!!
+                throw new ParseException(String.format("The selected date %s cannot be parsed", date), 0);
+            }
         } catch (ParseException e) {
             throw new ParseException(String.format("The selected date %s cannot be parsed", date), 0);
         }
@@ -162,6 +154,19 @@ public class TeamService {
         return team.getName() != null && !team.getName().contains(" ") && (team.getName().length() >= 4 && team.getName().length() <= 24);
     }
 
+
+    private UefaResponse convertUefaIntoUefaResponse(final Uefa uefa) {
+        UefaResponse uefaResponse = new UefaResponse();
+
+        if (uefa != null) {
+            uefaResponse.setIdUefa(uefa.getId());
+            uefaResponse.setDateWin(uefa.getDate());
+            uefaResponse.setTeamWin(uefa.getTeamChampion());
+        }
+
+        return uefaResponse;
+    }
+
     //method that make a TeamResponse
     private TeamResponse convertTeamIntoTeamResponse(final Team team) {
         TeamResponse teamResponse = new TeamResponse();
@@ -174,7 +179,12 @@ public class TeamService {
             teamResponse.setPhotoTeam(team.getPhoto());
 
             if (!team.getUefas().isEmpty()) {
-                teamResponse.setUefas(team.getUefas().get(0).getTeamChampion().getUefas());
+                List<UefaResponse> uefaResponseList = new ArrayList<>();
+                for (int i = 0; i < team.getUefas().size(); i++) {
+                    uefaResponseList.add(convertUefaIntoUefaResponse(team.getUefas().get(i)));
+                }
+
+                teamResponse.setUefas(uefaResponseList);
             }
         }
 

@@ -57,10 +57,7 @@ values ('Manchester City', 5, 5, null);
 
 ---------------------------------------------------------
 
-/*
 insert into uefa (date, team_id)
-values ('20210225', 2);
+values ('20210225', 6);
 insert into uefa (date, team_id)
-values ('20090312', 6);
-
- */
+values ('20121013', 6);

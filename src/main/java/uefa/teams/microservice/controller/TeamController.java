@@ -31,12 +31,13 @@ public class TeamController {
         }
     }
 
+
     @GetMapping("/uefalist/{id}")
     public ResponseEntity listUefaWonByTeam(@PathVariable final Integer id) {
         try {
             return ResponseEntity.ok()
                     .contentType(MediaType.parseMediaType("application/json"))
-                    .body(teamService.listUefasWonByTeam(id));
+                    .body(teamService.listUefas(id));
         } catch (NoSuchElementException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }
@@ -64,14 +65,19 @@ public class TeamController {
         }
     }
 
-    @PutMapping("/champion/{id}")
-    public String makeTeamChampion(@PathVariable final Integer id,
-                                   @RequestParam(value = "date", required = true) String date) {
+    @GetMapping("/champion/{id}")
+    public ResponseEntity getTeamChampionByDate(@PathVariable final Integer id,
+                                                @RequestParam(value = "date", required = true) String date) {
         try {
-            teamService.teamUefaChampion(id, date);
-            return "OK";
-        } catch (NoSuchElementException | ParseException ex) {
-            return ex.getMessage();
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType("application/json"))
+                    .body(teamService.teamUefaChampion(id, date));
+        } catch (NoSuchElementException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        } catch (ParseException | IllegalArgumentException ex) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+        } catch (NullPointerException ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
         }
     }
 
