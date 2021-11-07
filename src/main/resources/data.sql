@@ -61,3 +61,19 @@ insert into uefa (date, team_id)
 values ('20210225', 6);
 insert into uefa (date, team_id)
 values ('20121013', 6);
+insert into uefa (date, team_id)
+values ('20100210', 8);
+insert into uefa (date, team_id)
+values ('20181013', 1);
+insert into uefa (date, team_id)
+values ('20170225', 4);
+insert into uefa (date, team_id)
+values ('20161013', 4);
+insert into uefa (date, team_id)
+values ('20150225', 4);
+insert into uefa (date, team_id)
+values ('20131013', 2);
+insert into uefa (date, team_id)
+values ('20050225', 5);
+insert into uefa (date, team_id)
+values ('20111013', 3);
